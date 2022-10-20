@@ -1,6 +1,7 @@
 package seb39_40.coffeewithme.cafe.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import seb39_40.coffeewithme.cafe.mapper.CafeMapper;
 import seb39_40.coffeewithme.cafe.service.CafeService;
 import seb39_40.coffeewithme.common.dto.MultiResponseDto;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/cafe")
@@ -20,6 +22,7 @@ public class CafeController {
     @GetMapping("/{cafeId}")
     public ResponseEntity getCafe(@PathVariable Long cafeId){
         Cafe cafe = cafeService.findById(cafeId);
+        log.info("** Get Cafe [{}] Information", cafe.getId());
         return new ResponseEntity<>(cafeMapper.cafeToCafeDto(cafe), HttpStatus.CREATED);
     }
 
@@ -28,6 +31,7 @@ public class CafeController {
                                      @RequestParam(required = false, defaultValue = "newest") String sort,
                                      @RequestParam(required = false, defaultValue = "all") String category){
         Page<Cafe> cafe = cafeService.find(category, page - 1, sort);
+        log.info("** Get Cafe Information - Filter : [{}], Sort : [{}]", category, sort);
         return new ResponseEntity(new MultiResponseDto<>(cafeMapper.cafeListToCafeSimpleDto(cafe.getContent()), cafe),
                 HttpStatus.OK);
     }
@@ -37,6 +41,7 @@ public class CafeController {
                                      @RequestParam(required = false, defaultValue = "1") Integer page,
                                      @RequestParam(required = false, defaultValue = "newest") String sort){
         Page<Cafe> cafe = cafeService.search(keyword, page - 1, sort);
+        log.info("** Search Cafe Information - Keyword : [{}]", keyword);
         return new ResponseEntity(new MultiResponseDto<>(cafeMapper.cafeListToCafeSimpleDto(cafe.getContent()), cafe),
                 HttpStatus.OK);
     }
